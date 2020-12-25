@@ -101,8 +101,9 @@ app.all('*', (req, res, next) => {
 });
 
 app.use((err, req, res, next) => {
-  const { statusCode = 500, message = 'Something Went Wrong' } = err;
-  res.status(statusCode).render('campgrounds/error');
+  const { statusCode = 500 } = err;
+  if (!err.message) err.message = 'Something Went Wrong';
+  res.status(statusCode).render('campgrounds/error', { err });
 });
 
 app.listen(2000, () => {
