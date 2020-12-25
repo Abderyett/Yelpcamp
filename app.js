@@ -3,6 +3,7 @@ const path = require('path');
 const mongoose = require('mongoose');
 const methodOverride = require('method-override');
 const ejsMate = require('ejs-mate');
+const { campgroundSchema } = require('./schemas');
 const Campground = require('./models/campground');
 const ExpressError = require('./utilities/ExpressError');
 
@@ -23,6 +24,16 @@ app.use(methodOverride('_method'));
 app.set('view engine', 'ejs');
 app.set('views', path.join(__dirname, 'views'));
 
+const validateCamp = (req, res, next) => {
+  const { error } = campgroundSchema.validate(req.body);
+  if (error) {
+    const msg = error.details.map((el) => el.message).join(',');
+    throw new ExpressError(msg, 400);
+  } else {
+    next();
+  }
+};
+
 app.get('/', (req, res) => {
   res.render('home');
 });
@@ -39,9 +50,10 @@ app.get('/campgrounds', async (req, res, next) => {
 app.get('/campgrounds/new', async (req, res) => {
   res.render('campgrounds/new');
 });
-app.post('/campgrounds', async (req, res, next) => {
+app.post('/campgrounds', validateCamp, async (req, res, next) => {
   try {
     const addCamp = new Campground(req.body);
+
     await addCamp.save();
     res.redirect(`/campgrounds/${addCamp._id}`);
   } catch (error) {
@@ -70,7 +82,7 @@ app.get('/campgrounds/:id/edit', async (req, res, next) => {
     next(error);
   }
 });
-app.put('/campgrounds/:id', async (req, res, next) => {
+app.put('/campgrounds/:id', validateCamp, async (req, res, next) => {
   try {
     const { id } = req.params;
     await Campground.findByIdAndUpdate(id, req.body, {
