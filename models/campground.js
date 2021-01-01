@@ -8,6 +8,7 @@ const campSchema = new Schema({
   image: String,
   description: String,
   location: String,
+  reviews: [{ type: Schema.Types.ObjectId, ref: 'Review' }],
 });
 
 const Campground = mongoose.model('Campground', campSchema);

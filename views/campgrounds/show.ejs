@@ -26,8 +26,42 @@
 				>
 					<button class="btn btn-danger">Delete Post</button>
 				</form>
+
 			</div>
+			
+
 		</div>
 	<div/>
-</div>
+	<div class="col-12">
+		<% camps.reviews.forEach(review => { %>
+		<div class="card mb-3">
+			<div class="card-body">
+		<p>Rating: <%= review.rating %> </p>
+		<p>Review: <%= review.body %> </p>
+	</div>
+	</div>
+	<% }) %>
 
+
+	</div>
+
+	<div class="col-12 ">
+		
+		<form  action="/campgrounds/<%= camps._id %>/review " method="POST" class="form-validate" novalidate>
+			<h4>Leave a Review</h4>
+		<div class="mb-3">
+			<label for="range" class="form-label">Rating</label>
+      <input type="range" class="form-range" min="1" max="5" id="range" name="rating" >
+		</div>
+			<div class="mb-3">
+			<label for="review" class="form-label">Reviews</label>
+			<textarea name="body" class="form-control" id="review" rows="3" required></textarea>
+			<div class="invalid-feedback">
+				Empty review
+			</div>
+		</div>
+			<button class="btn btn-success mb-4">Submit</button>
+		</form>
+
+	</div>
+</div>
