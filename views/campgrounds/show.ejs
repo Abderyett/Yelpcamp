@@ -24,7 +24,7 @@
 					action="/campgrounds/<%= camps._id %>?_method=DELETE"
 					method="post"
 				>
-					<button class="btn btn-danger">Delete Post</button>
+					<button class="btn btn-danger">Delete Campground</button>
 				</form>
 			</div>
 		</div>
@@ -68,6 +68,13 @@
 				<div class="card-body">
 					<h5>Rating: <%= review.rating %></h5>
 					<p class="card-text">Review: <%= review.body %></p>
+					<form
+						class="d-inline"
+						action="/campgrounds/<%= camps._id %>/review/<%= review._id %>?_method=DELETE"
+						method="POST"
+					>
+						<button class="btn btn-sm btn-danger">Delete</button>
+					</form>
 				</div>
 			</div>
 			<% }) %>

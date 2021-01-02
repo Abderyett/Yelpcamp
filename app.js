@@ -11,6 +11,7 @@ const Review = require('./models/review');
 mongoose.connect('mongodb://localhost:27017/yelp-camp', {
   useNewUrlParser: true,
   useUnifiedTopology: true,
+  useFindAndModify: false,
 });
 const db = mongoose.connection;
 db.on('error', console.error.bind(console, 'connection error:'));
@@ -47,6 +48,14 @@ const validateReview = (req, res, next) => {
 app.get('/', (req, res) => {
   res.render('home');
 });
+
+//!  ================= Delete Comments ==================
+app.delete('/campgrounds/:id/review/:reviewId', async (req, res) => {
+  const { id, reviewId } = req.params;
+  await Campground.findByIdAndUpdate(id, { $pull: { reviews: reviewId } });
+  await Review.findByIdAndDelete(reviewId);
+  res.redirect(`/campgrounds/${id}`);
+});
 //! ======== show all campgrounds  =============
 app.get('/campgrounds', async (req, res, next) => {
   try {
@@ -71,7 +80,7 @@ app.post('/campgrounds', validateCamp, async (req, res, next) => {
   }
 });
 
-//! ============ Show details of Camp  ============
+//! ============ Show details of Camp Reviews & rating  ============
 app.get('/campgrounds/:id', async (req, res, next) => {
   try {
     const { id } = req.params;
