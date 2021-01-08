@@ -5,9 +5,13 @@ const methodOverride = require('method-override');
 const ejsMate = require('ejs-mate');
 const session = require('express-session');
 const flash = require('connect-flash');
+const passport = require('passport');
+const LocalStratery = require('passport-local');
 const ExpressError = require('./utilities/ExpressError');
-const campgrounds = require('./Routes/campgrounds');
-const review = require('./Routes/review');
+const campgroundRoutes = require('./Routes/campgrounds');
+const authRoute = require('./Routes/authRoute');
+const reviewRoutes = require('./Routes/review');
+const User = require('./models/user');
 
 mongoose.connect('mongodb://localhost:27017/yelp-camp', {
   useNewUrlParser: true,
@@ -19,6 +23,7 @@ db.on('error', console.error.bind(console, 'connection error:'));
 db.once('open', () => {
   console.log('Database Connected');
 });
+mongoose.set('useCreateIndex', true);
 
 const app = express();
 app.use(express.static(path.join(__dirname, 'public')));
@@ -39,14 +44,26 @@ app.use(
     },
   })
 );
+//! we should set passport.session after The SESSION
+app.use(passport.initialize());
+app.use(passport.session());
+passport.use(new LocalStratery(User.authenticate()));
+
+//* How to Store User in the Session
+passport.serializeUser(User.serializeUser());
+//* How to User Out of that session
+passport.deserializeUser(User.deserializeUser());
+
 app.use(flash());
 app.use((req, res, next) => {
   res.locals.success = req.flash('success');
   res.locals.error = req.flash('error');
+  // req.locals.match = req.flash('match');
   next();
 });
-app.use('/campgrounds', campgrounds);
-app.use('/campgrounds/:id/review', review);
+app.use('/campgrounds', campgroundRoutes);
+app.use('/campgrounds/:id/review', reviewRoutes);
+app.use('/register', authRoute);
 
 app.get('/', (req, res) => {
   res.render('home');

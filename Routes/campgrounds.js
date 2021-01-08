@@ -33,7 +33,7 @@ router.post('/', validateCamp, async (req, res, next) => {
 router.get('/:id', async (req, res, next) => {
   try {
     const { id } = req.params;
-    const camps = await await Campground.findById(id).populate('reviews');
+    const camps = await Campground.findById(id).populate('reviews');
     if (!camps) {
       req.flash('error', 'Campground not found');
       res.redirect('/campgrounds');
