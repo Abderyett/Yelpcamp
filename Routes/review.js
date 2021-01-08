@@ -3,6 +3,7 @@ const Review = require('../models/review');
 const { reviewSchema } = require('../schemas');
 const Campground = require('../models/campground');
 const ExpressError = require('../utilities/ExpressError');
+const isloggedIn = require('../middleware/isLoggedIn');
 
 const router = express.Router({ mergeParams: true, stritc: true });
 
@@ -17,7 +18,7 @@ const validateReview = (req, res, next) => {
 };
 //! ============ Show details of Camp Reviews & rating  ============
 
-router.post('/', validateReview, async (req, res, next) => {
+router.post('/', isloggedIn, validateReview, async (req, res, next) => {
   try {
     const { id } = req.params;
     const { body, rating } = req.body;
@@ -34,7 +35,7 @@ router.post('/', validateReview, async (req, res, next) => {
   }
 });
 //!  ================= Delete Comments ==================
-router.delete('/:reviewId', async (req, res, next) => {
+router.delete('/:reviewId', isloggedIn, async (req, res, next) => {
   try {
     const { id, reviewId } = req.params;
     await Campground.findByIdAndUpdate(id, { $pull: { reviews: reviewId } });

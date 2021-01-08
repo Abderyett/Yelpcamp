@@ -12,6 +12,7 @@ const campgroundRoutes = require('./Routes/campgrounds');
 const authRoute = require('./Routes/authRoute');
 const reviewRoutes = require('./Routes/review');
 const User = require('./models/user');
+const isLoggedIn = require('./middleware/isLoggedIn');
 
 mongoose.connect('mongodb://localhost:27017/yelp-camp', {
   useNewUrlParser: true,
@@ -63,9 +64,9 @@ app.use((req, res, next) => {
 });
 app.use('/campgrounds', campgroundRoutes);
 app.use('/campgrounds/:id/review', reviewRoutes);
-app.use('/register', authRoute);
+app.use('/', authRoute);
 
-app.get('/', (req, res) => {
+app.get('/', isLoggedIn, (req, res) => {
   res.render('home');
 });
 
