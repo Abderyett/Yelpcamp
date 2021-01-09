@@ -4,16 +4,6 @@ const User = require('../models/user');
 
 const router = express.Router();
 
-// const validatePassword = (req, res, next) => {
-//   const { password, confirmPassword } = req.body;
-//   if (password !== confirmPassword) {
-//     req.flash('match', "Password doesn't match");
-
-//     return res.redirect('/register');
-//   }
-//   next();
-// };
-
 router.get('/register', (req, res) => {
   res.render('userAuth/register');
 });
