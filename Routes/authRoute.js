@@ -7,15 +7,19 @@ const router = express.Router();
 router.get('/register', (req, res) => {
   res.render('userAuth/register');
 });
-router.post('/register', async (req, res) => {
+router.post('/register', async (req, res, next) => {
   try {
     const { username, email, password } = req.body;
     const user = await new User({ username, email });
 
     //! The Register method come from passport-local-mongoose isnted of Save
     await User.register(user, password);
+    req.logIn(user, (err) => {
+      if (err) return next(err);
+    });
+
     req.flash('success', 'Registred Succefully');
-    res.redirect('/campgrounds');
+    return res.redirect('/campgrounds');
   } catch (error) {
     req.flash('error', error.message);
     res.redirect('/register');
@@ -27,7 +31,9 @@ router.get('/login', (req, res) => {
 });
 router.post('/login', passport.authenticate('local', { failureRedirect: '/login', failureFlash: true }), (req, res) => {
   req.flash('success', 'Welcome Back!');
-  res.redirect('/campgrounds');
+  const redirectTo = req.session.returnTo || '/campgrounds';
+  delete req.session.returnTo;
+  res.redirect(redirectTo);
 });
 router.get('/logout', (req, res) => {
   req.logout();
