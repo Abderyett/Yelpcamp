@@ -9,6 +9,7 @@ const campSchema = new Schema({
   image: String,
   description: String,
   location: String,
+  author: { type: Schema.Types.ObjectId, ref: 'User' },
   reviews: [{ type: Schema.Types.ObjectId, ref: 'Review' }],
 });
 campSchema.post('findOneAndDelete', async function (doc) {
